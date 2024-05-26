@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="renderer.js"></script>
+</head>
+<body id="video">
+  <div id="container">
+    <div id="video-section">
+      <h2>Video Input</h2>
+      <input type="file" id="video-file" accept=".mp4">
+      <video id="video-player" width="100%" controls>
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <button id="detect-video">Detect Video</button>
+    </div>
+
+    <div id="api-response">
+      <h2>API Response</h2>
+      <p id="response-text">Response from YOLO API will be displayed here.</p>
+    </div>
+  </div>
+</body>
+</html>
