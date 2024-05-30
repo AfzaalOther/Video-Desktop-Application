@@ -9,20 +9,22 @@
 </head>
 <body id="video">
   <div id="container">
-    <div id="video-section">
-      <h2>Video Input</h2>
-      <input type="file" id="video-file" accept=".mp4">
-      <video id="video-player" width="100%" controls>
-        <source src="" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-      <button id="detect-video">Detect Video</button>
-    </div>
-
     <div id="api-response">
-      <h2>API Response</h2>
-      <p id="response-text">Response from YOLO API will be displayed here.</p>
+      <h2>Video Response</h2>
     </div>
+    <video id="video-player" width="100%" controls>
+      <source type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <video id="processed-video-player" width="100%" controls>
+      <source type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <div>
+    <input type="file" id="video-file">
+    <button id="detect-video">Detect Video</button>
+    <button id="play-both-videos">Play Both Videos</button>
   </div>
 </body>
 </html>

@@ -1,8 +1,7 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
-const { exec } = require('child_process');
+const {exec} = require('child_process')
 const fs = require('fs');
-
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -15,7 +14,7 @@ function createWindow() {
     }
   });
 
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   const menu = Menu.buildFromTemplate([
     {
@@ -29,7 +28,7 @@ function createWindow() {
       click() {
         win.loadFile('video.html');
       }
-    }
+    } 
   ]);
   Menu.setApplicationMenu(menu);
 
@@ -54,10 +53,6 @@ app.on('activate', () => {
   }
 });
 
- 
- 
-
-// Handle the 'detect-video' event
 ipcMain.handle('detect-video', async (event, videoPath) => {
   const command = `python ${path.join(__dirname, 'yoloBE', 'detect.py')} --source ${videoPath} --weights ${path.join(__dirname, 'yoloBE', 'yolov5s.pt')} --data ${path.join(__dirname, 'yoloBE', 'data', 'coco128.yaml')} --view-img 1 --device cpu`;
 
@@ -68,14 +63,16 @@ ipcMain.handle('detect-video', async (event, videoPath) => {
         reject(`Error: ${error.message}`);
         return;
       }
-      if (stderr) {
-        console.error(`Stderr: ${stderr}`);
-        reject(`Stderr: ${stderr}`);
-        return;
+      // if (stderr) {
+      //   console.error(`Stderr: ${stderr}`);
+      //   reject(`Stderr: ${stderr}`);
+      //   return ;
+      // }
+      if(stdout){
+        return stdout;
       }
       console.log(`Stdout: ${stdout}`);
       
-      // Find the latest exp folder
       const detectDir = path.join(__dirname, 'yoloBE', 'runs', 'detect');
       fs.readdir(detectDir, (err, files) => {
         if (err) {
@@ -83,28 +80,45 @@ ipcMain.handle('detect-video', async (event, videoPath) => {
           reject(`Error reading detect directory: ${err.message}`);
           return;
         }
-        // Filter for exp directories
-        const expDirs = files.filter(file => file.startsWith('exp'));
-        console.log('====================================');
-        console.log(expDirs);
-        console.log('====================================');
-        // Sort by newest exp folder
-        expDirs.sort((a, b) => {
-          const aNum = parseInt(a.replace('exp', ''), 10);
-          const bNum = parseInt(b.replace('exp', ''), 10);
+        // const expDirs = files.filter(file => file.startsWith('exp'));
+        // expDirs.sort((a, b) => {
+        //   const aNum = parseInt(a.replace('exp', ''), 10);
+        //   const bNum = parseInt(b.replace('exp', ''), 10);
+        //   return bNum - aNum;
+        // });
+
+
+        const expDirs = files.filter(file => file.startsWith('exp') && file !== 'exp');
+         expDirs.sort((a, b) => {
+         const aNum = parseInt(a.replace('exp', '') || 0, 10);
+         const bNum = parseInt(b.replace('exp', '') || 0, 10);
           return bNum - aNum;
-        });
+         });
+ 
+
+
+
+
         if (expDirs.length === 0) {
           reject('No exp directories found');
           return;
         }
         const latestExpDir = expDirs[0];
-        const detectedVideoPath = path.join(detectDir, latestExpDir, path.basename(videoPath));
-        console.log('====================================');
-        console.log("detectedVideoPath",detectDir,latestExpDir, detectedVideoPath);
-        console.log('====================================');
+        
+        console.log(latestExpDir);
+        // const detectedVideoPath = path.join(detectDir, latestExpDir,path.sep, path.basename(videoPath));
+        const detectedVideoPath = path.normalize(path.join(detectDir, latestExpDir, path.basename(videoPath)));
+
+        console.log('detectedVideoPath:', detectedVideoPath);
         resolve(detectedVideoPath);
-      });
+      }
+    
+    
+    );
+
+
+
+      
     });
   });
 });
